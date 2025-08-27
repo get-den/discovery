@@ -1,19 +1,19 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const { getSupabaseClient } = require('./supabase');
+import 'dotenv/config';
+import express, { Request, Response } from 'express';
+import cors from 'cors';
+import { getSupabaseClient } from './supabase';
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 // Health check
-app.get('/health', (req, res) => {
+app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'ok' });
 });
 
 // Mock chat endpoint (no DB calls)
-app.post('/chat', (req, res) => {
+app.post('/chat', (req: Request, res: Response) => {
   const { message = '' } = req.body || {};
 
   // Simple mock assistant response
@@ -32,8 +32,8 @@ app.post('/chat', (req, res) => {
   ];
   const names = ['Bistro', 'Kitchen', 'House', 'Grill', 'Café', 'Tavern', 'Diner'];
 
-  function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-  function slug() { return Math.random().toString(36).slice(2, 10); }
+  function rand<T>(arr: T[]): T { return arr[Math.floor(Math.random() * arr.length)]; }
+  function slug(): string { return Math.random().toString(36).slice(2, 10); }
 
   const count = 4 + Math.floor(Math.random() * 3); // 4–6
   const restaurants = Array.from({ length: count }).map((_, i) => {
@@ -58,7 +58,7 @@ app.post('/chat', (req, res) => {
 });
 
 // Restaurants CRUD
-app.get('/restaurants', async (req, res) => {
+app.get('/restaurants', async (_req: Request, res: Response) => {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from('restaurants')
@@ -69,7 +69,7 @@ app.get('/restaurants', async (req, res) => {
   res.json(data);
 });
 
-app.get('/restaurants/:id', async (req, res) => {
+app.get('/restaurants/:id', async (req: Request, res: Response) => {
   const { id } = req.params;
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
@@ -82,7 +82,7 @@ app.get('/restaurants/:id', async (req, res) => {
   res.json(data);
 });
 
-app.post('/restaurants', async (req, res) => {
+app.post('/restaurants', async (req: Request, res: Response) => {
   const supabase = getSupabaseClient();
   const { name, address, city, state, phone, cuisine, website, rating } = req.body || {};
   if (!name) return res.status(400).json({ error: 'name is required' });
@@ -100,7 +100,7 @@ app.post('/restaurants', async (req, res) => {
   res.status(201).json(data);
 });
 
-app.put('/restaurants/:id', async (req, res) => {
+app.put('/restaurants/:id', async (req: Request, res: Response) => {
   const { id } = req.params;
   const supabase = getSupabaseClient();
   const update = { ...req.body, updated_at: new Date().toISOString() };
@@ -116,7 +116,7 @@ app.put('/restaurants/:id', async (req, res) => {
   res.json(data);
 });
 
-app.delete('/restaurants/:id', async (req, res) => {
+app.delete('/restaurants/:id', async (req: Request, res: Response) => {
   const { id } = req.params;
   const supabase = getSupabaseClient();
   const { error } = await supabase

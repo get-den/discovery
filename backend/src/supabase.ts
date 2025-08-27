@@ -1,6 +1,6 @@
-const { createClient } = require('@supabase/supabase-js');
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
-function getSupabaseClient() {
+export function getSupabaseClient(): SupabaseClient {
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) {
@@ -10,6 +10,3 @@ function getSupabaseClient() {
     auth: { persistSession: false },
   });
 }
-
-module.exports = { getSupabaseClient };
-
