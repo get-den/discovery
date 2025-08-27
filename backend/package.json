@@ -21,6 +21,7 @@
     "express": "^5.1.0"
   },
   "devDependencies": {
+    "@shared/types": "file:../packages/types",
     "@types/cors": "^2.8.19",
     "@types/express": "^4.17.23",
     "@types/node": "^22.18.0",

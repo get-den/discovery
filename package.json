@@ -1,0 +1,10 @@
+{
+  "name": "restaurant-monorepo",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend",
+    "packages/*"
+  ]
+}
+

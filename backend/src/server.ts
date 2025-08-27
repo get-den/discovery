@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import { getSupabaseClient } from './supabase';
+import type { Restaurant, RestaurantList } from '@shared/types';
 
 const app = express();
 app.use(cors());
@@ -36,13 +37,13 @@ app.post('/chat', (req: Request, res: Response) => {
   function slug(): string { return Math.random().toString(36).slice(2, 10); }
 
   const count = 4 + Math.floor(Math.random() * 3); // 4–6
-  const restaurants = Array.from({ length: count }).map((_, i) => {
+  const restaurants: RestaurantList = Array.from({ length: count }).map((_, i) => {
     const cuisine = rand(cuisines);
     const loc = rand(cities);
     const id = `${Date.now()}_${i}_${slug()}`;
     const name = `${rand(['The', ''])} ${cuisine} ${rand(names)}`.replace(/\s+/g, ' ').trim();
     const rating = Math.round((3 + Math.random() * 2) * 10) / 10; // 3.0–5.0
-    return {
+    const r: Restaurant = {
       id,
       name,
       city: loc.city,
@@ -52,6 +53,7 @@ app.post('/chat', (req: Request, res: Response) => {
       website: `https://example.com/${slug()}`,
       address: `${100 + Math.floor(Math.random() * 900)} Main St`,
     };
+    return r;
   });
 
   res.json({ assistant, restaurants });
@@ -66,7 +68,7 @@ app.get('/restaurants', async (_req: Request, res: Response) => {
     .order('created_at', { ascending: false });
 
   if (error) return res.status(500).json({ error: error.message });
-  res.json(data);
+  res.json((data || []) as RestaurantList);
 });
 
 app.get('/restaurants/:id', async (req: Request, res: Response) => {
@@ -79,7 +81,7 @@ app.get('/restaurants/:id', async (req: Request, res: Response) => {
     .single();
 
   if (error) return res.status(404).json({ error: error.message });
-  res.json(data);
+  res.json(data as Restaurant);
 });
 
 app.post('/restaurants', async (req: Request, res: Response) => {
@@ -97,7 +99,7 @@ app.post('/restaurants', async (req: Request, res: Response) => {
     .single();
 
   if (error) return res.status(500).json({ error: error.message });
-  res.status(201).json(data);
+  res.status(201).json(data as Restaurant);
 });
 
 app.put('/restaurants/:id', async (req: Request, res: Response) => {
@@ -113,7 +115,7 @@ app.put('/restaurants/:id', async (req: Request, res: Response) => {
     .single();
 
   if (error) return res.status(400).json({ error: error.message });
-  res.json(data);
+  res.json(data as Restaurant);
 });
 
 app.delete('/restaurants/:id', async (req: Request, res: Response) => {

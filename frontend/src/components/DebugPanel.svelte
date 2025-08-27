@@ -1,7 +1,6 @@
 <script lang="ts">
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
-
-  type Restaurant = { name: string; city?: string; state?: string };
+  import type { Restaurant } from '@shared/types';
 
   let message: string = '';
   let restaurants: Restaurant[] = [];
@@ -34,8 +33,8 @@
         const err = await res.json().catch(() => ({}));
         throw new Error(err.error || `Request failed with ${res.status}`);
       }
-      restaurants = await res.json();
-      if (!Array.isArray(restaurants)) restaurants = [];
+      const data = await res.json();
+      restaurants = Array.isArray(data) ? (data as Restaurant[]) : [];
       if (restaurants.length === 0) listError = 'No restaurants found.';
     } catch (err) {
       listError = (err as Error).message || 'Failed to load restaurants';
