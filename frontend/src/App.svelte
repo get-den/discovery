@@ -93,45 +93,115 @@
     height: 100%;
     margin: 0;
     padding: 0;
-    font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu,
-      Cantarell, Noto Sans, Helvetica, Arial, 'Apple Color Emoji',
-      'Segoe UI Emoji';
-    background: #0f172a;
-    color: #e2e8f0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+    background: #fafaf9;
+    color: #1f2937;
   }
   main {
     min-height: 100vh;
-    padding-top: 64px; /* space for debug bar */
-    display: grid;
-    place-items: center;
+    padding: 80px 20px 40px;
+    max-width: 800px;
+    margin: 0 auto;
   }
-  .chat { width: min(720px, 92vw); }
+  
+  .chat { 
+    width: 100%;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  
   .chat form {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 8px;
+    position: relative;
+    margin-bottom: 32px;
   }
+  
   .chat-input {
-    padding: 12px 14px;
-    border-radius: 10px;
-    border: 1px solid #e5e7eb;
+    width: 100%;
+    padding: 18px 60px 18px 20px;
+    border-radius: 28px;
+    border: 1.5px solid #e5e7eb;
     background: #ffffff;
-    color: #0f172a;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    color: #1f2937;
+    font-size: 16px;
+    line-height: 1.5;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+    transition: all 0.2s ease;
+    outline: none;
+    box-sizing: border-box;
   }
-  .chat-input::placeholder { color: #94a3b8; }
+  
+  .chat-input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.15), 0 2px 4px rgba(0, 0, 0, 0.04);
+  }
+  
+  .chat-input::placeholder { 
+    color: #9ca3af;
+    font-weight: 400;
+  }
+  
   .chat-send {
-    padding: 12px 16px;
-    border-radius: 10px;
-    border: 1px solid #e5e7eb;
-    background: #ffffff;
-    color: #0f172a;
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: none;
+    background: #3b82f6;
+    color: white;
     cursor: pointer;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
   }
-  .chat-send[disabled] { opacity: 0.7; cursor: not-allowed; }
-  .status { margin: 12px 0 0; color: #fecaca; }
-  .assistant { margin: 16px 0 0; font-size: 1.1rem; }
-  .results { margin: 12px 0 0; padding-left: 20px; }
-  .results li { margin: 6px 0; }
+  
+  .chat-send:hover:not(:disabled) {
+    background: #2563eb;
+    box-shadow: 0 4px 8px rgba(59, 130, 246, 0.4);
+  }
+  
+  .chat-send:disabled { 
+    opacity: 0.6; 
+    cursor: not-allowed;
+    background: #9ca3af;
+    box-shadow: none;
+  }
+  
+  .status { 
+    margin: 16px 0;
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+  }
+  
+  .assistant { 
+    margin: 24px 0;
+    padding: 20px;
+    background: white;
+    border-radius: 16px;
+    font-size: 16px;
+    line-height: 1.6;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+  
+  .results { 
+    margin: 24px 0;
+    list-style: none;
+    padding: 0;
+  }
+  
+  .results li { 
+    margin: 12px 0;
+    padding: 16px 20px;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+    line-height: 1.5;
+  }
 </style>
