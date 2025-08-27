@@ -1,18 +1,8 @@
 <script lang="ts">
   import DebugPanel from './components/DebugPanel.svelte';
+  import { type Restaurant } from '@shared/types'
 
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
-
-  type Restaurant = {
-    id?: string;
-    name: string;
-    city?: string;
-    state?: string;
-    cuisine?: string;
-    rating?: number;
-    website?: string;
-    address?: string;
-  };
 
   let userInput = $state<string>('');
   let sending = $state<boolean>(false);
