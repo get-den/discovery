@@ -87,9 +87,9 @@
     z-index: 1000;
     box-sizing: border-box;
     padding: 8px 12px;
-    background: rgba(2, 6, 23, 0.9);
-    color: #e2e8f0;
-    border-bottom: 1px solid #334155;
+    background: rgba(255, 255, 255, 0.95);
+    color: #1a1a1a;
+    border-bottom: 1px solid #e1e5e9;
     backdrop-filter: saturate(180%) blur(10px);
   }
   .controls {
@@ -101,19 +101,37 @@
   button {
     padding: 6px 10px;
     border-radius: 6px;
-    border: 1px solid #334155;
-    background: #1e293b;
-    color: #e2e8f0;
+    border: 1px solid #e1e5e9;
+    background: #ffffff;
+    color: #1a1a1a;
     cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.2s ease;
   }
-  button[disabled] { opacity: 0.6; cursor: not-allowed; }
-  .status { margin: 6px 0 0; font-size: 0.9rem; }
-  .status.error { color: #fecaca; }
+  button:hover:not([disabled]) {
+    background: #f8f9fa;
+  }
+  button[disabled] { 
+    opacity: 0.6; 
+    cursor: not-allowed; 
+  }
+  .status { 
+    margin: 6px 0 0; 
+    font-size: 0.9rem;
+    color: #6b7280;
+  }
+  .status.error { 
+    color: #dc2626; 
+  }
   .list {
     margin: 8px 0 0;
     padding-left: 20px;
     max-height: 200px;
     overflow: auto;
+    color: #374151;
   }
-  .list li { margin: 4px 0; }
+  .list li { 
+    margin: 4px 0;
+    font-size: 0.85rem;
+  }
 </style>
