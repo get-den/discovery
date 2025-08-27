@@ -1,8 +1,8 @@
-import preprocess from 'svelte-preprocess';
-
 /** @type {import('svelte').Config} */
 const config = {
-  preprocess: preprocess(),
+  compilerOptions: {
+    runes: true,  // Enable Svelte 5 runes
+  },
 };
 
 export default config;
