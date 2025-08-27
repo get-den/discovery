@@ -1,15 +1,26 @@
-<script>
+<script lang="ts">
   import DebugPanel from './components/DebugPanel.svelte';
 
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
 
-  let userInput = '';
-  let sending = false;
-  let error = '';
-  let assistant = '';
-  let restaurants = [];
+  type Restaurant = {
+    id?: string;
+    name: string;
+    city?: string;
+    state?: string;
+    cuisine?: string;
+    rating?: number;
+    website?: string;
+    address?: string;
+  };
 
-  async function sendMessage(e) {
+  let userInput: string = '';
+  let sending: boolean = false;
+  let error: string = '';
+  let assistant: string = '';
+  let restaurants: Restaurant[] = [];
+
+  async function sendMessage(e?: Event) {
     e?.preventDefault?.();
     error = '';
     if (!userInput || !userInput.trim()) return;
@@ -25,10 +36,12 @@
         throw new Error(err.error || `Request failed with ${res.status}`);
       }
       const data = await res.json();
-      assistant = data?.assistant || '';
-      restaurants = Array.isArray(data?.restaurants) ? data.restaurants : [];
+      assistant = (data?.assistant as string) || '';
+      restaurants = Array.isArray(data?.restaurants)
+        ? (data.restaurants as Restaurant[])
+        : [];
     } catch (e) {
-      error = e?.message || 'Failed to send message';
+      error = (e as Error)?.message || 'Failed to send message';
     } finally {
       sending = false;
     }

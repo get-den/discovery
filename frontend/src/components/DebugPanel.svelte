@@ -1,11 +1,13 @@
-<script>
+<script lang="ts">
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
 
-  let message = '';
-  let restaurants = [];
-  let listing = false;
-  let listError = '';
-  let pinging = false;
+  type Restaurant = { name: string; city?: string; state?: string };
+
+  let message: string = '';
+  let restaurants: Restaurant[] = [];
+  let listing: boolean = false;
+  let listError: string = '';
+  let pinging: boolean = false;
 
   async function pingHealth() {
     message = '';
@@ -36,7 +38,7 @@
       if (!Array.isArray(restaurants)) restaurants = [];
       if (restaurants.length === 0) listError = 'No restaurants found.';
     } catch (err) {
-      listError = err.message || 'Failed to load restaurants';
+      listError = (err as Error).message || 'Failed to load restaurants';
       restaurants = [];
     } finally {
       listing = false;
@@ -115,4 +117,3 @@
   }
   .list li { margin: 4px 0; }
 </style>
-
