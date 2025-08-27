@@ -1,18 +1,31 @@
-<script>
+<script lang="ts">
   import LoadingSpinner from './LoadingSpinner.svelte';
   
-  export let value = '';
-  export let placeholder = 'What are you looking for?';
-  export let disabled = false;
-  export let onSubmit = () => {};
-  
-  let focused = false;
-  let inputElement;
+  interface Props {
+    value?: string;
+    placeholder?: string;
+    disabled?: boolean;
+    onSubmit?: (value: string) => void;
+  }
 
-  function handleSubmit(e) {
+  let { 
+    value = $bindable(''),
+    placeholder = 'What are you looking for?',
+    disabled = false,
+    onSubmit
+  }: Props = $props();
+  
+  let focused = $state<boolean>(false);
+  let inputElement = $state<HTMLInputElement>();
+
+  // Derived states for UI logic
+  let hasValue = $derived(value.trim().length > 0);
+  let canSubmit = $derived(hasValue && !disabled);
+
+  function handleSubmit(e: Event) {
     e.preventDefault();
-    if (!value.trim() || disabled) return;
-    onSubmit(value.trim());
+    if (!canSubmit) return;
+    onSubmit?.(value.trim());
   }
 
   function handleFocus() {
@@ -23,13 +36,14 @@
     focused = false;
   }
 
-  function handleKeydown(e) {
+  function handleKeydown(e: KeyboardEvent) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSubmit(e);
     }
   }
 
+  // Expose focus method using $export
   export function focus() {
     inputElement?.focus();
   }
@@ -48,8 +62,8 @@
       autocomplete="off"
       class="search-input"
     />
-    {#if value.length > 0}
-      <button type="submit" {disabled} class="search-button" title="Search">
+    {#if hasValue}
+      <button type="submit" disabled={!canSubmit} class="search-button" title="Search">
         {#if disabled}
           <LoadingSpinner size="sm" inline={true} />
         {:else}

@@ -1,10 +1,18 @@
-<script>
-  export let size = 'md';
-  export let inline = false;
+<script lang="ts">
+  interface Props {
+    size?: 'sm' | 'md' | 'lg';
+    inline?: boolean;
+  }
+
+  let { size = 'md', inline = false }: Props = $props();
+  
+  // Derived states for styling
+  let isSmall = $derived(size === 'sm');
+  let isLarge = $derived(size === 'lg');
 </script>
 
 <div class="spinner-container" class:inline>
-  <div class="spinner" class:sm={size === 'sm'} class:lg={size === 'lg'}></div>
+  <div class="spinner" class:sm={isSmall} class:lg={isLarge}></div>
 </div>
 
 <style>

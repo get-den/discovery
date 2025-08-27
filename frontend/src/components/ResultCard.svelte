@@ -1,19 +1,45 @@
-<script>
-  export let result = null;
+<script lang="ts">
+  type Restaurant = {
+    id?: string;
+    name: string;
+    city?: string;
+    state?: string;
+    cuisine?: string;
+    rating?: number;
+  };
+
+  type Result = {
+    type: 'success' | 'assistant' | 'restaurants' | 'error';
+    message?: string;
+    data?: any[] | Restaurant[];
+  };
+
+  interface Props {
+    result?: Result | null;
+  }
+
+  let { result = null }: Props = $props();
+
+  // Derived states for UI logic
+  let hasResult = $derived(result !== null);
+  let isSuccess = $derived(result?.type === 'success');
+  let isAssistant = $derived(result?.type === 'assistant' && !!result?.message);
+  let isRestaurants = $derived(result?.type === 'restaurants' && Array.isArray(result?.data) && result.data.length > 0);
+  let isError = $derived(result && !isSuccess && !isAssistant && !isRestaurants);
 </script>
 
-{#if result}
+{#if hasResult}
   <div class="result-section">
-    {#if result.type === 'success'}
+    {#if isSuccess}
       <div class="result-card">
         <h3>Result</h3>
         <pre class="result-data">{JSON.stringify(result.data, null, 2)}</pre>
       </div>
-    {:else if result.type === 'assistant' && result.message}
+    {:else if isAssistant}
       <div class="assistant-card">
         <div class="assistant-message">{result.message}</div>
       </div>
-    {:else if result.type === 'restaurants' && result.data?.length > 0}
+    {:else if isRestaurants}
       <div class="restaurants-card">
         <h3>Restaurants</h3>
         <ul class="restaurant-list">
@@ -35,7 +61,7 @@
           {/each}
         </ul>
       </div>
-    {:else}
+    {:else if isError}
       <div class="error-card">
         <p>{result.message || 'Something went wrong'}</p>
       </div>

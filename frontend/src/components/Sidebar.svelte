@@ -1,14 +1,42 @@
-<script>
-  import { createEventDispatcher } from 'svelte';
-  
+<script lang="ts">
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
-  const dispatch = createEventDispatcher();
 
-  let healthStatus = '';
-  let restaurants = [];
-  let listing = false;
-  let listError = '';
-  let pinging = false;
+  type Restaurant = {
+    id?: string;
+    name: string;
+    city?: string;
+    state?: string;
+    cuisine?: string;
+  };
+
+  type HealthResponse = {
+    status: string;
+  };
+
+  type ActionEvent = {
+    type: 'health' | 'health_error' | 'restaurants_loaded' | 'restaurants_error' | 'clear';
+    status?: string;
+    error?: string;
+    restaurants?: Restaurant[];
+  };
+
+  interface Props {
+    onaction?: (event: ActionEvent) => void;
+  }
+
+  let { onaction }: Props = $props();
+
+  let healthStatus = $state<string>('');
+  let restaurants = $state<Restaurant[]>([]);
+  let listing = $state<boolean>(false);
+  let listError = $state<string>('');
+  let pinging = $state<boolean>(false);
+
+  // Derived states for UI logic
+  let hasRestaurants = $derived(restaurants.length > 0);
+  let isLoading = $derived(pinging || listing);
+  let hasHealthStatus = $derived(healthStatus.length > 0);
+  let isHealthy = $derived(healthStatus.includes('Health: ok'));
 
   async function pingHealth() {
     healthStatus = '';
@@ -17,12 +45,12 @@
     
     try {
       const res = await fetch(`${BACKEND_URL}/health`);
-      const data = await res.json();
+      const data: HealthResponse = await res.json();
       healthStatus = `Health: ${data.status}`;
-      dispatch('action', { type: 'health', status: data.status });
+      onaction?.({ type: 'health', status: data.status });
     } catch (e) {
       healthStatus = 'Health check failed';
-      dispatch('action', { type: 'health_error', error: e.message });
+      onaction?.({ type: 'health_error', error: (e as Error).message });
     } finally {
       pinging = false;
     }
@@ -39,14 +67,17 @@
         const err = await res.json().catch(() => ({}));
         throw new Error(err.error || `Request failed with ${res.status}`);
       }
-      restaurants = await res.json();
-      if (!Array.isArray(restaurants)) restaurants = [];
-      if (restaurants.length === 0) listError = 'No restaurants found.';
-      dispatch('action', { type: 'restaurants_loaded', restaurants });
+      const data = await res.json();
+      restaurants = Array.isArray(data) ? data : [];
+      if (restaurants.length === 0) {
+        listError = 'No restaurants found.';
+      }
+      onaction?.({ type: 'restaurants_loaded', restaurants });
     } catch (err) {
-      listError = err.message || 'Failed to load restaurants';
+      const errorMessage = (err as Error).message || 'Failed to load restaurants';
+      listError = errorMessage;
       restaurants = [];
-      dispatch('action', { type: 'restaurants_error', error: err.message });
+      onaction?.({ type: 'restaurants_error', error: errorMessage });
     } finally {
       listing = false;
     }
@@ -56,7 +87,7 @@
     healthStatus = '';
     listError = '';
     restaurants = [];
-    dispatch('action', { type: 'clear' });
+    onaction?.({ type: 'clear' });
   }
 </script>
 
@@ -83,8 +114,8 @@
       </button>
     </div>
 
-    {#if healthStatus}
-      <div class="status-message" class:success={healthStatus.includes('Health: ok')}>
+    {#if hasHealthStatus}
+      <div class="status-message" class:success={isHealthy}>
         {healthStatus}
       </div>
     {/if}
@@ -93,7 +124,7 @@
       <div class="status-message error">{listError}</div>
     {/if}
 
-    {#if restaurants && restaurants.length > 0}
+    {#if hasRestaurants}
       <div class="restaurants-section">
         <h3>All Restaurants</h3>
         <ul class="restaurant-list" aria-live="polite">

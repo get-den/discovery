@@ -14,16 +14,20 @@
     address?: string;
   };
 
-  let userInput: string = '';
-  let sending: boolean = false;
-  let error: string = '';
-  let assistant: string = '';
-  let restaurants: Restaurant[] = [];
+  let userInput = $state<string>('');
+  let sending = $state<boolean>(false);
+  let error = $state<string>('');
+  let assistant = $state<string>('');
+  let restaurants = $state<Restaurant[]>([]);
+
+  // Derived state for input validation
+  let isValidInput = $derived(userInput.trim().length > 0);
 
   async function sendMessage(e?: Event) {
     e?.preventDefault?.();
     error = '';
-    if (!userInput || !userInput.trim()) return;
+    if (!isValidInput) return;
+    
     sending = true;
     try {
       const res = await fetch(`${BACKEND_URL}/chat`, {
@@ -60,7 +64,7 @@
         bind:value={userInput}
         autocomplete="off"
       />
-      <button class="chat-send" type="submit" disabled={sending}>
+      <button class="chat-send" type="submit" disabled={sending || !isValidInput}>
         {sending ? 'Sending…' : 'Send'}
       </button>
     </form>
